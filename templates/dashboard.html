@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Ringkasan</h1>
+
+<!-- Metrik Atas -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-indigo-600">
+        <div class="text-gray-500 text-sm font-semibold">TOTAL MAHASISWA</div>
+        <div class="text-3xl font-bold mt-2">{{ metrics.total }} Orang</div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+        <div class="text-gray-500 text-sm font-semibold">RATA-RATA IPK</div>
+        <div class="text-3xl font-bold mt-2">{{ metrics.avg_ipk }}</div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-pink-500">
+        <div class="text-gray-500 text-sm font-semibold">RASIO GENDER (L/P)</div>
+        <div class="text-3xl font-bold mt-2">{{ metrics.l }} / {{ metrics.p }}</div>
+    </div>
+</div>
+
+<!-- Grafik -->
+<div class="bg-white p-6 rounded-lg shadow max-w-md">
+    <h3 class="text-lg font-semibold mb-4 text-gray-700">Distribusi Gender</h3>
+    <canvas id="genderChart"></canvas>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('genderChart').getContext('2d');
+        
+        // Mengamankan data dari Flask agar tidak crash jika bernilai 0
+        const dataL = Number("{{ metrics.l }}") || 0;
+        const dataP = Number("{{ metrics.p }}") || 0;
+        
+        const isEmpty = dataL === 0 && dataP === 0;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                // Jika data masih kosong, tampilkan label "Belum Ada Data"
+                labels: isEmpty ? ['Belum Ada Data'] : ['Laki-Laki', 'Perempuan'],
+                datasets: [{
+                    // Jika kosong, masukkan nilai [1] berwarna abu-abu sebagai placeholder visual
+                    data: isEmpty ? [1] : [dataL, dataP],
+                    backgroundColor: isEmpty ? ['#e5e7eb'] : ['#4f46e5', '#ec4899']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        // Matikan pop-up info jika grafik berupa data kosong
+                        enabled: !isEmpty
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

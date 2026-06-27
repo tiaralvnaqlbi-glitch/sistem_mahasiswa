@@ -1,0 +1,26 @@
+[
+    {
+        "nim": "91011121",
+        "nama": "fauzan",
+        "jurusan": "teknik industri",
+        "semester": 2,
+        "ipk": 3.5,
+        "gender": "L"
+    },
+    {
+        "nim": "24101140",
+        "nama": "cici",
+        "jurusan": "ilmu komunikasi",
+        "semester": 3,
+        "ipk": 3.0,
+        "gender": "P"
+    },
+    {
+        "nim": "11121314",
+        "nama": "mitha",
+        "jurusan": "pendidikan agama islam",
+        "semester": 3,
+        "ipk": 3.5,
+        "gender": "P"
+    }
+]

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>StudentHub - Manajemen Mahasiswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Untuk Grafik Dashboard -->
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-900 text-white flex flex-col justify-between p-4">
+        <div>
+            <div class="text-2xl font-bold mb-8 flex items-center gap-2">🎓 <span>StudentHub</span></div>
+            <nav class="space-y-2">
+                <a href="/" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-indigo-700">📊 Dashboard</a>
+                <a href="/mahasiswa" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-indigo-700">📝 Data Mahasiswa</a>
+                <a href="/pencarian" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-indigo-700">🔍 Pencarian</a>
+                <a href="/pengurutan" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-indigo-700">🔀 Pengurutan</a>
+            </nav>
+        </div>
+        <div class="text-xs text-indigo-300 font-semibold tracking-wide">PANEL ADMIN</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-y-auto p-8">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

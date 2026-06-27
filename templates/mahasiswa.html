@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Manajemen Data Mahasiswa</h1>
+    <button onclick="toggleModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">+ Tambah Mahasiswa</button>
+</div>
+
+<!-- Tabel -->
+<div class="bg-white rounded-lg shadow overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">NIM</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jurusan</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sem.</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IPK</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="table-body" class="divide-y divide-gray-200"></tbody>
+    </table>
+</div>
+
+<!-- Modal Form Input -->
+<div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
+        <h2 class="text-xl font-bold mb-4">Form Mahasiswa</h2>
+        <form id="form-mhs" class="space-y-3">
+            <input type="text" id="nim" placeholder="NIM (8 digit)" required class="w-full p-2 border rounded">
+            <input type="text" id="nama" placeholder="Nama" required class="w-full p-2 border rounded">
+            <input type="text" id="jurusan" placeholder="Jurusan" required class="w-full p-2 border rounded">
+            <input type="number" id="semester" placeholder="Semester" required class="w-full p-2 border rounded">
+            <input type="number" step="0.01" id="ipk" placeholder="IPK" required class="w-full p-2 border rounded">
+            <select id="gender" class="w-full p-2 border rounded">
+                <option value="L">Laki-Laki</option>
+                <option value="P">Perempuan</option>
+            </select>
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" onclick="toggleModal()" class="px-4 py-2 bg-gray-300 rounded">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function loadTable() {
+        const res = await fetch('/api/mahasiswa');
+        const data = await res.json();
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+        data.forEach(m => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold">${m.nim}</td>
+                    <td class="px-6 py-4">${m.nama}</td>
+                    <td class="px-6 py-4">${m.jurusan}</td>
+                    <td class="px-6 py-4">${m.semester}</td>
+                    <td class="px-6 py-4 text-indigo-600 font-bold">${m.ipk.toFixed(2)}</td>
+                    <td class="px-6 py-4">${m.gender == 'L' ? '♂ L' : '♀ P'}</td>
+                    <td class="px-6 py-4"><button onclick="deleteMhs('${m.nim}')" class="text-red-500 hover:underline">Hapus</button></td>
+                </tr>`;
+        });
+    }
+
+    function toggleModal() { document.getElementById('modal').classList.toggle('hidden'); }
+
+    document.getElementById('form-mhs').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            nim: document.getElementById('nim').value,
+            nama: document.getElementById('nama').value,
+            jurusan: document.getElementById('jurusan').value,
+            semester: document.getElementById('semester').value,
+            ipk: document.getElementById('ipk').value,
+            gender: document.getElementById('gender').value
+        };
+        const res = await fetch('/api/mahasiswa', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if(res.ok) { toggleModal(); loadTable(); } else { alert(result.msg); }
+    });
+
+    async function deleteMhs(nim) {
+        if(confirm('Hapus mahasiswa ini?')) {
+            await fetch(`/api/mahasiswa/${nim}`, {method: 'DELETE'});
+            loadTable();
+        }
+    }
+    loadTable();
+</script>
+{% endblock %}
